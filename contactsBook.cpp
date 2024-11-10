@@ -42,10 +42,10 @@ ContactsBook& ContactsBook::operator=(ContactsBook &other){
     }
 }
 
-// FIXME
+
 Contact& ContactsBook::operator[](unsigned int index){
     assert(index < _maxContacts);
-    return _storage[index];
+    return *_storage[index];
 }
 
 ContactsBook::~ContactsBook(){
@@ -91,15 +91,14 @@ void ContactsBook::emptyMemory(){
     _contactsInMemory = 0;
 }
 
-// FIXME
-Contact& ContactsBook::search(unsigned int tel) const{
+// FIXME unsafe return type
+Contact* ContactsBook::search(unsigned int tel) const{
     unsigned int index = 0;
     while(index < _contactsInMemory && _storage[index]->_tel != tel){
         index++;
     }
     if(index == _contactsInMemory){   // not found, out of bounds
-        Contact v1 = {0, 0, 0};
-        return v1;
+        return nullptr;
     }
     else {
         return _storage[index];
@@ -108,7 +107,7 @@ Contact& ContactsBook::search(unsigned int tel) const{
 
 void ContactsBook::push(Contact contact){
     if (_contactsInMemory < _maxContacts){  // if storage not full
-        if (search(contact._tel)._tel != 0){     // if contact not already in memory
+        if (!search(contact._tel)){     // if contact not already in memory
             Contact* tmp = new Contact{contact._surname, contact._name, contact._tel};
             _storage[_contactsInMemory] = tmp;
             _contactsInMemory++;

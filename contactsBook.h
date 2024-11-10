@@ -35,7 +35,7 @@ class ContactsBook{  // implemented as a stack
         void emptyMemory();
 
         // search in book by telephone and return reference
-        Contact& search(unsigned int tel) const;
+        Contact* search(unsigned int tel) const;
 
         // push contact on top of ContactsBook stack
         void push(Contact contact);
