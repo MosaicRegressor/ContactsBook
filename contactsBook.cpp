@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-// deafult constructor
+// default constructor
 ContactsBook::ContactsBook() : _maxContacts(0), _storage(nullptr), _contactsInMemory(0){
     #ifndef NDEBUG
     std::cout << "ContactsBook()" << std::endl;
@@ -11,7 +11,7 @@ ContactsBook::ContactsBook() : _maxContacts(0), _storage(nullptr), _contactsInMe
 };
 
 ContactsBook::ContactsBook(unsigned int maxContacts) : _maxContacts(0), _storage(nullptr), _contactsInMemory(0) {
-        #ifndef NDEBUG
+    #ifndef NDEBUG
     std::cout << "ContactsBook(maxContacts)" << std::endl;
     #endif
     set_maxContacts(maxContacts);   // with this setter istantiation of the storage
@@ -19,7 +19,7 @@ ContactsBook::ContactsBook(unsigned int maxContacts) : _maxContacts(0), _storage
 
 // copy constructor
 ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(nullptr), _contactsInMemory(0) {
-                  #ifndef NDEBUG
+    #ifndef NDEBUG
     std::cout << "Copy constructor" << std::endl;
     #endif                                          
     Contact** tmp = new Contact*[other._maxContacts];  // come prima cosa cerco di allocare, assicuro la recovery dall'error
@@ -30,6 +30,7 @@ ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(null
 
     _contactsInMemory = other._contactsInMemory;
     _maxContacts = other._maxContacts;
+    delete[] _storage;
     _storage = tmp;
 }
 
@@ -44,16 +45,20 @@ ContactsBook& ContactsBook::operator=(ContactsBook &other){
     return *this;
 }
 
-
 Contact& ContactsBook::operator[](unsigned int index){
     assert(index < _maxContacts);
     return *_storage[index];
 }
 
 ContactsBook::~ContactsBook(){
-        #ifndef NDEBUG
+    #ifndef NDEBUG
     std::cout << "Destructor()" << std::endl;
     #endif
+
+    // deep delete
+    for(unsigned int i = 0; i < _contactsInMemory; i++){
+        delete _storage[i];
+    }
 
     delete[] _storage;
     _storage = nullptr;
@@ -134,15 +139,15 @@ void ContactsBook::push(Contact* contact){
             Contact* tmp = new Contact{contact->_surname, contact->_name, contact->_tel};
             _storage[_contactsInMemory] = tmp;
             _contactsInMemory++;
-            delete contact;
         }
         else{
-             std::cout << "Contact already exists!" << std::endl;
+             std::cout << "Contact already exists, not added!" << std::endl;
         }
     }
     else{
-        std::cout << "Contacts book is full!" << std::endl;
+        std::cout << "Contacts book is full, not added!" << std::endl;
     }
+    delete contact;
 }
 
 void ContactsBook::push(Contact contact){
@@ -150,11 +155,12 @@ void ContactsBook::push(Contact contact){
     std::cout << "push(Contact)" << std::endl;
     #endif
     Contact* c2 = new Contact{contact._surname, contact._name, contact._tel};
+    delete &contact;       // i delete the unknown struct, it may be instatiated on main on stack
     push(c2);
 }
 
 void ContactsBook::push(std::string surname, std::string name, unsigned int tel){
-        #ifndef NDEBUG
+    #ifndef NDEBUG
     std::cout << "push(params)" << std::endl;
     #endif
     Contact* contact = new Contact{surname, name, tel};

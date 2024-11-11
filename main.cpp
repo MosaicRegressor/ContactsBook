@@ -37,7 +37,8 @@ int main(){
 
         wantsToInput = surname != "*";
         if(wantsToInput){
-            contBook.push(surname, name, nTel);
+            Contact dbg = {surname, name, nTel};
+            contBook.push(dbg);
         }
         i++;
     }
