@@ -3,8 +3,14 @@
 #include "ContactsBook.h"
 #include "Contact.h"
 
+/*
+TODO
+- implement exception handling
+- implement feat load and save
+- fix memory leak
+*/
+
 int main(){
-    
     unsigned int maxContacts;
     std::cout << "Numero voci rubrica:";
     std::cin >> maxContacts;
