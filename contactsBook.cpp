@@ -1,4 +1,4 @@
-#include "contactsBook.h"
+#include "ContactsBook.h"
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -11,16 +11,17 @@ ContactsBook::ContactsBook() : _maxContacts(0), _storage(nullptr), _contactsInMe
 };
 
 ContactsBook::ContactsBook(unsigned int maxContacts) : _maxContacts(0), _storage(nullptr), _contactsInMemory(0) {
-    _maxContacts = maxContacts;
-    
-    #ifndef NDEBUG
+        #ifndef NDEBUG
     std::cout << "ContactsBook(maxContacts)" << std::endl;
     #endif
+    set_maxContacts(maxContacts);   // with this setter istantiation of the storage
 };
 
 // copy constructor
 ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(nullptr), _contactsInMemory(0) {
-                                                        
+                  #ifndef NDEBUG
+    std::cout << "Copy constructor" << std::endl;
+    #endif                                          
     Contact** tmp = new Contact*[other._maxContacts];  // come prima cosa cerco di allocare, assicuro la recovery dall'error
     
     for(unsigned int i = 0; i < other._maxContacts; i++){
@@ -30,6 +31,8 @@ ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(null
     _contactsInMemory = other._contactsInMemory;
     _maxContacts = other._maxContacts;
     _storage = tmp;
+
+
 }
 
 ContactsBook& ContactsBook::operator=(ContactsBook &other){
@@ -40,6 +43,7 @@ ContactsBook& ContactsBook::operator=(ContactsBook &other){
         std::swap(this -> _maxContacts, tmp._maxContacts);
         std::swap(this -> _contactsInMemory, tmp._contactsInMemory);
     }
+    return *this;
 }
 
 
@@ -49,13 +53,23 @@ Contact& ContactsBook::operator[](unsigned int index){
 }
 
 ContactsBook::~ContactsBook(){
+        #ifndef NDEBUG
+    std::cout << "Destructor()" << std::endl;
+    #endif
+
     delete[] _storage;
     _storage = nullptr;
     _maxContacts = 0;
     _contactsInMemory = 0;
+
+
 }
 
 void ContactsBook::set_maxContacts(unsigned int newMaxContacts){
+    #ifndef NDEBUG
+    std::cout << "SetMaxContacts()" << std::endl;
+    #endif
+
     // provo ad allocare un array di puntatori a struct voce
     Contact** tmp = new Contact*[newMaxContacts];
 
@@ -81,36 +95,54 @@ void ContactsBook::set_maxContacts(unsigned int newMaxContacts){
         emptyMemory();
     }
     _maxContacts = newMaxContacts;
+
+
 }
 
 void ContactsBook::emptyMemory(){
+    #ifndef NDEBUG
+    std::cout << "Empty memory()" << std::endl;
+    #endif
+
     // azzero tutte le celle
     for(int i = 0; i < _maxContacts; i++){
         _storage[i] = nullptr;
     }
     _contactsInMemory = 0;
+
+
 }
 
 // FIXME unsafe return type
 Contact* ContactsBook::search(unsigned int tel) const{
+    #ifndef NDEBUG
+    std::cout << "search()" << std::endl;
+    #endif
+
     unsigned int index = 0;
     while(index < _contactsInMemory && _storage[index]->_tel != tel){
         index++;
     }
-    if(index == _contactsInMemory){   // not found, out of bounds
-        return nullptr;
+
+    if(index < _contactsInMemory){   // not found, out of bounds
+        return _storage[index];
     }
     else {
-        return _storage[index];
+        return nullptr;
     }
 }
 
-void ContactsBook::push(Contact contact){
+void ContactsBook::push(Contact* contact){
+    #ifndef NDEBUG
+    std::cout << "push(Contact*)" << std::endl;
+    #endif
+    assert(contact != nullptr);
     if (_contactsInMemory < _maxContacts){  // if storage not full
-        if (!search(contact._tel)){     // if contact not already in memory
-            Contact* tmp = new Contact{contact._surname, contact._name, contact._tel};
+        if (search(contact->_tel) == nullptr){     // if contact not already in memory
+            Contact* tmp = new Contact{contact->_surname, contact->_name, contact->_tel};
             _storage[_contactsInMemory] = tmp;
             _contactsInMemory++;
+            delete contact;
         }
         else{
              std::cout << "Contact already exists!" << std::endl;
@@ -121,19 +153,30 @@ void ContactsBook::push(Contact contact){
     }
 }
 
+void ContactsBook::push(Contact contact){
+    #ifndef NDEBUG
+    std::cout << "push(Contact)" << std::endl;
+    #endif
+    Contact* c2 = new Contact{contact._surname, contact._name, contact._tel};
+    push(c2);
+}
+
 void ContactsBook::push(std::string surname, std::string name, unsigned int tel){
-    Contact contact = Contact{surname, name, tel};
+        #ifndef NDEBUG
+    std::cout << "push(params)" << std::endl;
+    #endif
+    Contact* contact = new Contact{surname, name, tel};
     push(contact);
 }
 
 std::ostream &operator<<(std::ostream &os, const ContactsBook &contactsBook){
     os << "Size of the rubrica: " << contactsBook._maxContacts << std::endl;
-    os << "Number of saved items: " << contactsBook._contactsInMemory;
+    os << "Number of saved items: " << contactsBook._contactsInMemory << std::endl;
     
     Contact* contact = nullptr;
     for(unsigned int i = 0; i < contactsBook._contactsInMemory; i++){
         contact = contactsBook._storage[i];
-        os << "#" << i << " :" << *contact << std::endl;
+        os << "Contact #" << i + 1 << " :" << *contact << std::endl;
     }
     return os;
 }

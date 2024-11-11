@@ -1,13 +1,16 @@
 #ifndef CONTACTS_BOOK
 #define CONTACS_BOOK
 
-#include "contact.h"
+#include "Contact.h"
 #include <iostream>
 
 class ContactsBook{  // implemented as a stack
     unsigned int _maxContacts;
     Contact** _storage;   // array of pointers to contacts structs
     unsigned int _contactsInMemory; // used to save the fullness of the stack
+
+    private:
+        void push(Contact* contact);
 
     public:
         // default constructor, FUNDAMENTAL

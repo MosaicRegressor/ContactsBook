@@ -1,7 +1,7 @@
 #include  <iostream>
 #include <string.h>
-#include "contactsBook.h"
-#include "contact.h"
+#include "ContactsBook.h"
+#include "Contact.h"
 
 int main(){
     std::cout << "Numero voci rubrica:" << std::endl;
@@ -15,7 +15,8 @@ int main(){
     unsigned int nTel = 0;
 
     unsigned int i = 0;
-    do{
+    bool wantsToInput = true;
+    while(wantsToInput && i < maxContacts){
         std::cout << "Inserisci cognome:" << std::endl;
         std::cin >> surname;
         std::cout << "Inserisci nome:" << std::endl;
@@ -23,10 +24,12 @@ int main(){
         std::cout << "Inserisci nTel:" << std::endl;
         std::cin >> nTel;
 
-        // add to rubrica
-        contBook.push(surname, name, nTel); 
+        wantsToInput = surname != "*";
+        if(wantsToInput){
+            contBook.push(surname, name, nTel);
+        }
+        i++;
     }
-    while(surname != "*" && i < maxContacts);
 
     std::cout << contBook << std::endl;
 
