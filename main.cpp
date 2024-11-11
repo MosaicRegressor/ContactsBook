@@ -7,7 +7,6 @@
 TODO
 - implement exception handling
 - implement feat load and save
-- fix memory leak
 */
 
 int main(){
@@ -37,11 +36,14 @@ int main(){
 
         wantsToInput = surname != "*";
         if(wantsToInput){
-            Contact dbg = {surname, name, nTel};
-            contBook.push(dbg);
+            contBook.push(surname, name, nTel);
         }
         i++;
     }
+
+    std::cout << contBook << std::endl;
+
+    contBook.set_maxContacts(maxContacts - 1);
 
     std::cout << contBook << std::endl;
 

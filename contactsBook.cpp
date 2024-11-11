@@ -91,9 +91,12 @@ void ContactsBook::set_maxContacts(unsigned int newMaxContacts){
     }
     else {
         // reset content of contactsBook and set new instance state
-        delete[] _storage;
+        if (_storage != nullptr){
+            emptyMemory();  // deep delete of current memory
+            delete[] _storage;
+        }
         _storage = tmp;
-        emptyMemory();
+        emptyMemory();  // initialization of the new memory
     }
     _maxContacts = newMaxContacts;
 }
@@ -105,6 +108,8 @@ void ContactsBook::emptyMemory(){
 
     // azzero tutte le celle
     for(int i = 0; i < _maxContacts; i++){
+        std::cout << _storage[i];
+        delete _storage[i]; // deep delete
         _storage[i] = nullptr;
     }
     _contactsInMemory = 0;
@@ -150,12 +155,11 @@ void ContactsBook::push(Contact* contact){
     delete contact;
 }
 
-void ContactsBook::push(Contact contact){
+void ContactsBook::push(Contact contact){   // passed by copy
     #ifndef NDEBUG
     std::cout << "push(Contact)" << std::endl;
     #endif
     Contact* c2 = new Contact{contact._surname, contact._name, contact._tel};
-    delete &contact;       // i delete the unknown struct, it may be instatiated on main on stack
     push(c2);
 }
 
