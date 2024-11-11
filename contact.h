@@ -1,8 +1,8 @@
-#include <string.h>
-#include <iostream>
-
 #ifndef CONTACT_H
 #define CONTACT_H
+
+#include <string.h>
+#include <iostream>
 
 struct Contact {
     std::string _surname;

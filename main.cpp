@@ -1,12 +1,14 @@
-#include  <iostream>
+#include <iostream>
 #include <string.h>
 #include "ContactsBook.h"
 #include "Contact.h"
 
 int main(){
-    std::cout << "Numero voci rubrica:" << std::endl;
+    
     unsigned int maxContacts;
+    std::cout << "Numero voci rubrica:";
     std::cin >> maxContacts;
+    std::cout << std::endl;
 
     ContactsBook contBook(maxContacts);
 
@@ -17,12 +19,15 @@ int main(){
     unsigned int i = 0;
     bool wantsToInput = true;
     while(wantsToInput && i < maxContacts){
-        std::cout << "Inserisci cognome:" << std::endl;
+        std::cout << "Inserisci cognome:";
         std::cin >> surname;
-        std::cout << "Inserisci nome:" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Inserisci nome:";
         std::cin >> name;
-        std::cout << "Inserisci nTel:" << std::endl;
+        std::cout << std::endl;
+        std::cout << "Inserisci nTel:";
         std::cin >> nTel;
+        std::cout << std::endl;
 
         wantsToInput = surname != "*";
         if(wantsToInput){

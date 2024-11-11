@@ -31,8 +31,6 @@ ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(null
     _contactsInMemory = other._contactsInMemory;
     _maxContacts = other._maxContacts;
     _storage = tmp;
-
-
 }
 
 ContactsBook& ContactsBook::operator=(ContactsBook &other){
@@ -61,8 +59,6 @@ ContactsBook::~ContactsBook(){
     _storage = nullptr;
     _maxContacts = 0;
     _contactsInMemory = 0;
-
-
 }
 
 void ContactsBook::set_maxContacts(unsigned int newMaxContacts){
@@ -95,8 +91,6 @@ void ContactsBook::set_maxContacts(unsigned int newMaxContacts){
         emptyMemory();
     }
     _maxContacts = newMaxContacts;
-
-
 }
 
 void ContactsBook::emptyMemory(){
@@ -109,8 +103,6 @@ void ContactsBook::emptyMemory(){
         _storage[i] = nullptr;
     }
     _contactsInMemory = 0;
-
-
 }
 
 // FIXME unsafe return type
@@ -170,7 +162,7 @@ void ContactsBook::push(std::string surname, std::string name, unsigned int tel)
 }
 
 std::ostream &operator<<(std::ostream &os, const ContactsBook &contactsBook){
-    os << "Size of the rubrica: " << contactsBook._maxContacts << std::endl;
+    os << std::endl << "Size of the rubrica: " << contactsBook._maxContacts << std::endl;
     os << "Number of saved items: " << contactsBook._contactsInMemory << std::endl;
     
     Contact* contact = nullptr;

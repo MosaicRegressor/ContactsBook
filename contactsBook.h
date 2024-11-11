@@ -1,5 +1,7 @@
 #ifndef CONTACTS_BOOK
-#define CONTACS_BOOK
+#define CONTACTS_BOOK
+
+#define NDEBUG
 
 #include "Contact.h"
 #include <iostream>
