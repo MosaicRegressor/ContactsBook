@@ -55,11 +55,7 @@ ContactsBook::~ContactsBook(){
     std::cout << std::endl << "Destructor()";
     #endif
 
-    // deep delete
-    for(unsigned int i = 0; i < _contactsInStorage; i++){
-        delete _storage[i];
-    }
-
+    eraseStorageContent();
     delete[] _storage;
     _storage = nullptr;
     _maxContacts = 0;
@@ -92,6 +88,7 @@ void ContactsBook::set_max_contacts(unsigned int newMaxContacts){
     std::cout << std::endl << "SetMaxContacts()";
     #endif
 
+
     // allocate and init new storage
     Contact** tmp = new Contact*[newMaxContacts];
     for(unsigned int i = 0; i < newMaxContacts; i++){   // FIXME lento!! ottimizza!
@@ -117,7 +114,7 @@ void ContactsBook::set_max_contacts(unsigned int newMaxContacts){
         else{   // shrink
             _contactsInStorage = 0; // removed all of the contacts
         }
-        delete[] _storage; _storage = nullptr;
+        eraseStorageContent(); delete[] _storage; _storage = nullptr;
         _storage = tmp;
         _maxContacts = newMaxContacts;
     }
