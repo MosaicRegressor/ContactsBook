@@ -53,12 +53,6 @@ int main(){
 
     std::cout << contBook;
 
-    // extend
-    #ifdef DEBUG
-    std::cout << std::endl << "Extend by one";
-    #endif
-    contBook.set_max_contacts(maxContacts + 1);
-    std::cout << contBook;
 
     // shrink
     #ifdef DEBUG

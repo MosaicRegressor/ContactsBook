@@ -88,35 +88,45 @@ void ContactsBook::set_max_contacts(unsigned int newMaxContacts){
     std::cout << std::endl << "SetMaxContacts()";
     #endif
 
-
-    // allocate and init new storage
-    Contact** tmp = new Contact*[newMaxContacts];
-    for(unsigned int i = 0; i < newMaxContacts; i++){   // FIXME lento!! ottimizza!
-        tmp[i] = nullptr;
-    }
-
-    // understand in which case you are
-    if(_storage == nullptr){    // first run, just assign the new storage
-        _storage = tmp;
-        _maxContacts = newMaxContacts;
+    // handling of base case
+    if(newMaxContacts == 0){    // the user wants to delete the storage
+        eraseStorageContent();
+        delete[] _storage;
+        _storage = nullptr;
+        _maxContacts = 0;
         _contactsInStorage = 0;
     }
-    else{   // there's already a storage
-        if(newMaxContacts > _maxContacts){  // let's extend, fill in the contacts if they exist, then set the new memory
-            // fill the contacts in the new storage, then swap storage
-            for(unsigned int i = 0; i < _contactsInStorage; i++){    // if no contacts, no contacts will be inserted
-                tmp[i] = _storage[i];
-            }
-            // _contactsInStorage is unchanged, i keep the contacts
+    else{
+        // allocate and init new storage
+        Contact** tmp = new Contact*[newMaxContacts];
+        for(unsigned int i = 0; i < newMaxContacts; i++){   // FIXME lento!! ottimizza!
+            tmp[i] = nullptr;
+        }
 
-            // now the content of _Storage is SHARED with _tmp
+        // understand in which case you are
+        if(_storage == nullptr){    // first run, just assign the new storage
+            _storage = tmp;
+            _maxContacts = newMaxContacts;
+            _contactsInStorage = 0;
         }
-        else{   // shrink
-            _contactsInStorage = 0; // removed all of the contacts
+        else{   // there's already a storage
+            if(newMaxContacts > _maxContacts){  // let's extend, fill in the contacts if they exist, then set the new memory
+                // fill the contacts in the new storage, then swap storage
+                for(unsigned int i = 0; i < _contactsInStorage; i++){    // if no contacts, no contacts will be inserted
+                    tmp[i] = _storage[i];
+                }
+                // _contactsInStorage is unchanged, i keep the contacts
+
+                // now the content of _Storage is SHARED with _tmp
+            }
+            else{   // shrink, delete content
+                _contactsInStorage = 0; // removed all of the contacts
+                eraseStorageContent(); 
+            }
+            delete[] _storage; _storage = nullptr;
+            _storage = tmp;
+            _maxContacts = newMaxContacts;
         }
-        eraseStorageContent(); delete[] _storage; _storage = nullptr;
-        _storage = tmp;
-        _maxContacts = newMaxContacts;
     }
 }
 
