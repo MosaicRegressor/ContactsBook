@@ -130,6 +130,37 @@ void ContactsBook::set_max_contacts(unsigned int newMaxContacts){
     }
 }
 
+void ContactsBook::save(std::string fPath) const{
+    assert(fPath != "");
+
+    if(_contactsInStorage == 0){    // handling of base case
+        std::cout << std::endl << "No saved contacts, nothing to dump..." << std::endl;
+    }
+    else{   // TODO handle errors
+        std::ofstream fStream;
+        try{
+            fStream.open("contacts.dmp", std::ofstream::out | std::ofstream::trunc);
+        }catch(...){
+            std::cerr << "error in opening file, reverting...";
+            }; // TODO delete file
+        
+        for(unsigned int i = 0; i < _contactsInStorage; i++){
+            Contact* contact =_storage[i];
+            std::string surname = contact->_surname;
+            std::string name = contact->_name;
+            unsigned int tel = contact->_tel;
+            try{
+                fStream << surname << "\n" << name << "\n" << tel << "\n";
+            }catch(...){
+                std::cerr << "error in writing to file, reverting...";
+            }; // TODO delete file
+        }
+        fStream.close();
+    }
+}
+
+
+
 // deallocate class contacts and restore defined behavior
 void ContactsBook::eraseStorageContent(){
     #ifdef DEBUG

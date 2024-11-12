@@ -3,7 +3,7 @@
 #include "ContactsBook.h"
 #include "Contact.h"
 
-// #define DEBUG
+#define DEBUG
 
 /*
 TODO
@@ -12,9 +12,16 @@ TODO
 */
 
 int main(){
+
     unsigned int maxContacts;
+    #ifndef DEBUG
     std::cout << "Numero voci rubrica:";
     std::cin >> maxContacts;
+    #endif
+
+    #ifdef DEBUG
+    maxContacts = 5;
+    #endif
 
     ContactsBook contBook(maxContacts);
 
@@ -26,7 +33,7 @@ int main(){
     bool wantsToInput = true;
     while(wantsToInput && i < maxContacts){
         #ifdef DEBUG
-        surname = i; name = i; tel = i;
+        surname = "doe"; name = "john"; tel = i;
         #endif
         #ifndef DEBUG
         std::cout << std::endl << "Inserisci cognome:";
@@ -50,15 +57,26 @@ int main(){
         i++;    // FIXME even if the push is not done, this is incremented
     }
 
+    #ifdef DEBUG
+    std::cout << std::endl << "first init";
     std::cout << contBook;
 
+    std::cout << std::endl << "Extend by one";
+    contBook.set_max_contacts(maxContacts + 1);
+    std::cout << contBook;
 
-    // shrink
-    #ifdef DEBUG
+    std::cout << std::endl << "Dump file";
+    contBook.save("contacts.dump");
+
+    std::cout << std::endl << "Read dump file";
+    contBook.load("contacts.dump");
+
     std::cout << std::endl << "Shrink by one";
-    #endif
     contBook.set_max_contacts(maxContacts - 1);
     std::cout << contBook;
+    #endif
+
+
 
 
     return 0;
