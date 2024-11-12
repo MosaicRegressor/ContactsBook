@@ -3,13 +3,12 @@
 #include "ContactsBook.h"
 #include "Contact.h"
 
-#define DEBUG
+// #define DEBUG
 
 /*
 TODO
 - implement exception handling
 - implement feat load and save
-- test shrink with initial storage size = 1
 */
 
 int main(){
