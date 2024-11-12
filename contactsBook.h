@@ -7,7 +7,7 @@
 class ContactsBook{  // implemented as a stack
     unsigned int _maxContacts;
     Contact** _storage;   // array of pointers to contacts structs
-    unsigned int _contactsInMemory; // used to save the fullness of the stack
+    unsigned int _contactsInStorage; // used to save the fullness of the stack
 
     private:
         void push(Contact* contact);
@@ -32,10 +32,10 @@ class ContactsBook{  // implemented as a stack
         Contact& operator[](unsigned int index);
 
         // getter e setter
-        void set_maxContacts(unsigned int maxContacts);        
+        void set_max_contacts(unsigned int maxContacts);        
 
         // zero the contents of memory
-        void emptyMemory();
+        void eraseStorageContent();
 
         // search in book by telephone and return reference
         Contact* search(unsigned int tel) const;

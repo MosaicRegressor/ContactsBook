@@ -1,5 +1,5 @@
 main.exe: main.o ContactsBook.o Contact.o
-	g++ main.o ContactsBook.o Contact.o -o main
+	g++ main.o ContactsBook.o Contact.o -o main.exe
 
 main.o:	main.cpp
 	g++ -c main.cpp -p main.o
