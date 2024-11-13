@@ -3,7 +3,7 @@
 #include "ContactsBook.h"
 #include "Contact.h"
 
-#define DEBUG
+// #define DEBUG
 
 /*
 TODO
@@ -55,6 +55,7 @@ int main(){
             contBook.push(surname, name, tel);
         }
         i++;    // FIXME even if the push is not done, this is incremented
+
     }
 
     #ifdef DEBUG
@@ -78,6 +79,24 @@ int main(){
     contBook.set_max_contacts(maxContacts - 1);
     std::cout << contBook;
     #endif
+
+    #ifndef DEBUG
+    std::cout << contBook;
+
+    bool wantsToSave = false;
+    std::string answer = "";
+    std::cout << std::endl << "Vuoi salvare un backup della rubrica?(y/n):";
+    std::cin >> answer;
+    wantsToSave = answer == "y";
+
+    if(wantsToSave){
+        contBook.save();
+        contBook.load();
+        std::cout << contBook;
+    }
+    
+    #endif
+
 
 
     return 0;

@@ -131,9 +131,7 @@ void ContactsBook::set_max_contacts(unsigned int newMaxContacts){
     }
 }
 
-void ContactsBook::save(std::string fPath) const{
-    assert(fPath != "");
-
+void ContactsBook::save() const{
     if(_contactsInStorage == 0){    // handling of base case
         std::cout << std::endl << "No saved contacts, nothing to dump..." << std::endl;
     }
@@ -161,8 +159,7 @@ void ContactsBook::save(std::string fPath) const{
     }
 }
 
-void ContactsBook::load(std::string fPath){     // precondition: the user has not tampered the backup file
-    assert(fPath != "");
+void ContactsBook::load(){     // precondition: the user has not tampered the backup file
     // FIXME handle the case in which the file to be read doesn't exist
 
     // precondition: once opened, the read from a file will never fail 

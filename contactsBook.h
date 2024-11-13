@@ -37,9 +37,9 @@ class ContactsBook{  // implemented as a stack
         // zero the contents of memory
         void eraseStorageContent();
 
-        void load(std::string fPath);
+        void load();
 
-        void save(std::string fPath) const;
+        void save() const;
 
         // search in book by telephone and return reference
         Contact* search(unsigned int tel) const;
