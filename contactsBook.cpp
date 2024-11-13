@@ -121,8 +121,8 @@ void ContactsBook::set_max_contacts(unsigned int newMaxContacts){
                 // now the content of _Storage is SHARED with _tmp
             }
             else{   // shrink, delete content
-                _contactsInStorage = 0; // removed all of the contacts
                 eraseStorageContent(); 
+                _contactsInStorage = 0; // removed all of the contacts
             }
             delete[] _storage; _storage = nullptr;
             _storage = tmp;
@@ -185,7 +185,6 @@ void ContactsBook::load(std::string fPath){     // precondition: the user has no
     Contact** restoredStorage = new Contact*[bkStorageSize];
     std::string surname = "";
     std::string name = "";
-    std::stringstream telSStream(line);
     unsigned int tel = 0;
     for(unsigned int i = 0; i < bkStorageSize; i++){
         std::getline(fStream, line);
@@ -193,6 +192,7 @@ void ContactsBook::load(std::string fPath){     // precondition: the user has no
         std::getline(fStream, line);
         name = line;
         std::getline(fStream, line);
+        std::stringstream telSStream(line);
         telSStream >> tel;
         restoredStorage[i] = new Contact{surname, name, tel};
     }

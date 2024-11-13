@@ -71,15 +71,13 @@ int main(){
     std::cout << std::endl << "Read dump file";
     contBook.load("contacts.dump");
 
-    std::cout << std::endl << "After laod of backup";
+    std::cout << std::endl << "After load of backup";
     std::cout << contBook;
 
     std::cout << std::endl << "Shrink by one";
     contBook.set_max_contacts(maxContacts - 1);
     std::cout << contBook;
     #endif
-
-
 
 
     return 0;
