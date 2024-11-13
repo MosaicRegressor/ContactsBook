@@ -8,7 +8,6 @@
 /*
 TODO
 - implement exception handling
-- implement feat load and save
 */
 
 int main(){
