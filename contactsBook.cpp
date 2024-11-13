@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 // default constructor
 ContactsBook::ContactsBook() : _maxContacts(0), _storage(nullptr), _contactsInStorage(0){
@@ -143,7 +144,8 @@ void ContactsBook::save(std::string fPath) const{
         }catch(...){
             std::cerr << "error in opening file, reverting...";
             }; // TODO delete file
-        
+
+        fStream << _contactsInStorage << "\n";
         for(unsigned int i = 0; i < _contactsInStorage; i++){
             Contact* contact =_storage[i];
             std::string surname = contact->_surname;
@@ -159,6 +161,52 @@ void ContactsBook::save(std::string fPath) const{
     }
 }
 
+void ContactsBook::load(std::string fPath){     // precondition: the user has not tampered the backup file
+    assert(fPath != "");
+    // FIXME handle the case in which the file to be read doesn't exist
+
+    // precondition: once opened, the read from a file will never fail 
+    std::ifstream fStream;
+    try{
+        fStream.open("contacts.dmp", std::ofstream::in);
+    }catch(...){
+        std::cerr << "error in opening file, reverting...";
+    }; // TODO delete file
+
+    // get content of file 
+    std::string line = "";
+    std::getline(fStream, line);    //0
+    
+    // cast by using streams, the c++ way
+    std::stringstream lineStream(line);
+    unsigned int bkStorageSize = 0;
+    lineStream >> bkStorageSize;
+
+    Contact** restoredStorage = new Contact*[bkStorageSize];
+    std::string surname = "";
+    std::string name = "";
+    std::stringstream telSStream(line);
+    unsigned int tel = 0;
+    for(unsigned int i = 0; i < bkStorageSize; i++){
+        std::getline(fStream, line);
+        surname = line;
+        std::getline(fStream, line);
+        name = line;
+        std::getline(fStream, line);
+        telSStream >> tel;
+        restoredStorage[i] = new Contact{surname, name, tel};
+    }
+    fStream.close();
+
+    this->_contactsInStorage = bkStorageSize;
+    this->_maxContacts = bkStorageSize;
+
+    eraseStorageContent();
+    delete[] _storage;
+    _storage = nullptr;
+
+    _storage = restoredStorage;
+    }
 
 
 // deallocate class contacts and restore defined behavior
