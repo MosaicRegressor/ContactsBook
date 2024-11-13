@@ -2,5 +2,4 @@
 *.exe
 .vscode
 *.out
-output
-*.dmp
+contacts.dmp
