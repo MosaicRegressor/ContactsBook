@@ -17,7 +17,6 @@ ContactsBook::ContactsBook(unsigned int maxContacts) : _maxContacts(0), _storage
     set_max_contacts(maxContacts);
 };
 
-
 ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(nullptr), _contactsInStorage(0) {
     #ifdef DEBUG
     std::cout << std::endl << "Copy constructor";
