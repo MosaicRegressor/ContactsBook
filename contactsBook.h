@@ -4,7 +4,7 @@
 #include "Contact.h"
 #include <iostream>
 
-class ContactsBook{  // implemented as a stack
+class ContactsBook{
     unsigned int _maxContacts;
     Contact** _storage;   // array of pointers to contacts structs
     unsigned int _contactsInStorage; // used to save the fullness of the stack
