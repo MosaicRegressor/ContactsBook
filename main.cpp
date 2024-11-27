@@ -2,32 +2,35 @@
 #include <string.h>
 #include "ContactsBook.h"
 #include "Contact.h"
+#include "contBookExcept.h"
 
 // #define DEBUG
 
-/*
-TODO
-- implement exception handling
-*/
-
 int main(){
+    int maxContacts = 0;
+    ContactsBook contBook;
+    bool validSize = false;
+    do{
+        #ifndef DEBUG
+        std::cout << "Numero voci rubrica:";
+        std::cin >> maxContacts;
+        #endif
+        #ifdef DEBUG
+        maxContacts = 5;
+        isInputValid = true;
+        #endif
+        try {
+            ContactsBook contBook(maxContacts);
+        }
+        catch(std::range_error &e){
+            std::cout << e.what();
+            validSize = true;
+        }
+    }
+    while(!validSize);
 
-    unsigned int maxContacts = 0;
-    #ifndef DEBUG
-    std::cout << "Numero voci rubrica:";
-    std::cin >> maxContacts;
-    #endif
-    #ifdef DEBUG
-    maxContacts = 5;
-    #endif
-    ContactsBook contBook(maxContacts);
-
-    std::string surname = "";
-    std::string name = "";
-    unsigned int tel = 0;
-
-    unsigned int i = 0;
-    bool wantsToInput = true;
+    std::string surname = ""; std::string name = ""; int tel = 0;
+    unsigned int i = 0; bool wantsToInput = true;
     while(wantsToInput && i < maxContacts){
         #ifdef DEBUG
         surname = "doe"; name = "john"; tel = i;
@@ -46,11 +49,18 @@ int main(){
         #endif
         wantsToInput = surname != "*";
         if(wantsToInput){
-            contBook.push(surname, name, tel);
+                try{
+                    contBook.push(surname, name, tel);
+                    i++;
+                }
+                catch(ContactAlreadyExists &e){
+                    std::cout << e.what();
+                }
+                catch(CBookStorageFull &e){
+                    std::cout << e.what();
+                }
+            }
         }
-        i++;    // FIXME even if the push is not done, this is incremented
-
-    }
 
     #ifdef DEBUG
     std::cout << std::endl << "first init";
