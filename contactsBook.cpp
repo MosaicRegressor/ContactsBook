@@ -1,5 +1,6 @@
-#include "ContactsBook.h"
+#include "contactsBook.h"
 #include "contBookExcept.h"
+#include "contactExcept.h"
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -25,7 +26,7 @@ ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(null
 
     Contact** tmp = new Contact*[other._maxContacts];
     
-    for(unsigned int i = 0; i < other._maxContacts; i++){
+    for(int i = 0; i < other._maxContacts; i++){
         tmp[i] = other._storage[i];
     }
 
@@ -34,6 +35,15 @@ ContactsBook::ContactsBook(ContactsBook &other) : _maxContacts(0), _storage(null
     delete[] _storage;
     _storage = tmp;
 }
+
+// getters, returned read only reference
+const int& ContactsBook::maxContacts() const{
+    return _maxContacts;
+}
+const int& ContactsBook::contactsInStorage() const{
+    return _contactsInStorage;
+}
+
 
 ContactsBook& ContactsBook::operator=(ContactsBook &other){
     if(this != &other){
@@ -46,7 +56,7 @@ ContactsBook& ContactsBook::operator=(ContactsBook &other){
     return *this;
 }
 
-Contact& ContactsBook::operator[](unsigned int index){
+Contact& ContactsBook::operator[](int index){
     if(index < 0 || index >= _maxContacts){
         throw(std::out_of_range("index cannot be negative or greater than the size of the storage"));
     }
@@ -69,45 +79,48 @@ void ContactsBook::set_max_contacts(int newMaxContacts){
     #ifdef DEBUG
     std::cout << std::endl << "SetMaxContacts()";
     #endif
-
     if(newMaxContacts < 0){
         throw std::range_error("The storage of the book can't be negative!");
     }
-    else if(newMaxContacts == 0){
+    else if(newMaxContacts == _maxContacts){
+        std::cout << "The new size is the same as the current size, nothing to do";
+    }
+    else if(newMaxContacts == 0){   // the user wants to delete the storage
         eraseStorageContent();
         delete[] _storage;
         _storage = nullptr;
         _maxContacts = 0;
         _contactsInStorage = 0;
     }
-    else{
+    else{   // the storage has contacts saved
         Contact** tmp = nullptr;
         try{
             tmp = new Contact*[newMaxContacts];
         }
         catch(std::bad_alloc){
-            throw std::range_error("The size specified is too big or there's no more ram available!");
+            throw std::range_error("The new size specified for the storage is too big or there's no more ram available!");
         }
 
-        for(unsigned int i = 0; i < newMaxContacts; i++){
+        for(int i = 0; i < newMaxContacts; i++){
             tmp[i] = nullptr;
         }
 
-        if(_storage == nullptr){
+        if(_storage == nullptr){    // call at init
             _storage = tmp;
             _maxContacts = newMaxContacts;
             _contactsInStorage = 0;
         }
         else{
-            if(newMaxContacts > _maxContacts){
-                for(unsigned int i = 0; i < _contactsInStorage; i++){
+            if(newMaxContacts > _maxContacts){  // expand, keep data, just add cells
+                for(int i = 0; i < _contactsInStorage; i++){
                     tmp[i] = _storage[i];
                 }
             }
-            else{
-                eraseStorageContent(); 
+            else{   // shrink, deep erase data, remove cells
+                eraseStorageContent();
                 _contactsInStorage = 0;
             }
+            // swap storage with the new one
             delete[] _storage; _storage = nullptr;
             _storage = tmp;
             _maxContacts = newMaxContacts;
@@ -115,10 +128,10 @@ void ContactsBook::set_max_contacts(int newMaxContacts){
     }
 }
 
+// precondition: once opened, the write from a file will never fail
 void ContactsBook::save() const{
-    // precondition: once opened, the write from a file will never fail
     if(_contactsInStorage == 0){
-        throw CBookStorageEmpty();
+        throw CBookStorageEmpty("You can't save an empty storage!");
     }
     else{
         std::ofstream fStream;
@@ -131,11 +144,11 @@ void ContactsBook::save() const{
         };
 
         fStream << _contactsInStorage << "\n";
-        for(unsigned int i = 0; i < _contactsInStorage; i++){
+        for(int i = 0; i < _contactsInStorage; i++){
             Contact* contact =_storage[i];
             std::string surname = contact->_surname;
             std::string name = contact->_name;
-            unsigned int tel = contact->_tel;
+            int tel = contact->_tel;
             fStream << surname << "\n" << name << "\n" << tel << "\n";
         }
         fStream.close();
@@ -161,13 +174,13 @@ void ContactsBook::load(){     // precondition: the user has not tampered the ba
 
     std::string line = "";std::getline(fStream, line);
     
-    unsigned int bkStorageSize = 0; std::stringstream lineStream(line); lineStream >> bkStorageSize;
+    int bkStorageSize = 0; std::stringstream lineStream(line); lineStream >> bkStorageSize;
 
     Contact** restoredStorage = new Contact*[bkStorageSize];
     std::string surname = "";
     std::string name = "";
-    unsigned int tel = 0;
-    for(unsigned int i = 0; i < bkStorageSize; i++){
+    int tel = 0;
+    for(int i = 0; i < bkStorageSize; i++){
         std::getline(fStream, line); surname = line;
         std::getline(fStream, line); name = line;
         std::getline(fStream, line); std::stringstream telSStream(line); telSStream >> tel;
@@ -196,16 +209,19 @@ void ContactsBook::eraseStorageContent(){
     }
 }
 
-Contact* ContactsBook::search(unsigned int tel) const{
+Contact* ContactsBook::search(int tel) const{
     #ifdef DEBUG
     std::cout << std::endl << "search()";
     #endif
 
-    if(_contactsInStorage == 0){
-        throw CBookStorageEmpty();
+    if(_maxContacts == 0){
+        throw CBookStorageEmpty("You can't find contacts in an empty book!");
+    }
+    else if(_contactsInStorage == 0){
+        return nullptr;
     }
 
-    unsigned int index = 0;
+    int index = 0;
     while(index < _contactsInStorage && _storage[index]->_tel != tel){
         index++;
     }
@@ -218,16 +234,27 @@ Contact* ContactsBook::search(unsigned int tel) const{
     }
 }
 
+void validateContactInfo(std::string name, std::string surname, int tel){
+    std::string errorString = "";
+    if(name == ""){
+        errorString += "invalid name";
+    }
+    if(surname == ""){
+        errorString += "invalid surname";
+    }
+    if(tel < 0){
+        errorString += "invalid tel number";
+    }
+    if(errorString != ""){
+        throw ContactInfoNotValid(errorString);
+    }
+}
+
 void ContactsBook::push(Contact* contact){
     #ifdef DEBUG
     std::cout << std::endl << "push(Contact*)";
     #endif
-    assert(contact != nullptr);
-    if(contact->_tel < 0){
-        throw std::
-    }
     if (_contactsInStorage < _maxContacts){  // if storage not full
-
         bool contactExists = search(contact->_tel) != nullptr;
         if (!contactExists){     // if contact not already in storage
             _storage[_contactsInStorage] = contact;
@@ -235,11 +262,10 @@ void ContactsBook::push(Contact* contact){
         }
         else{
              std::cout << "Contact already exists, not added!" << std::endl;
-             throw ContactAlreadyExists(contact->_tel);
+             throw ContactAlreadyExistsInStorage(contact->_tel);
         }
     }
     else{
-        std::cout << "Contacts book is full, not added!" << std::endl;
         throw CBookStorageFull();
     }
 }
@@ -248,16 +274,34 @@ void ContactsBook::push(Contact contact){
     #ifdef DEBUG
     std::cout << std::endl << "push(Contact)";
     #endif
-    Contact* c2 = new Contact{contact._surname, contact._name, contact._tel};
-    push(c2);
+
+    std::string cName = contact._name;
+    std::string cSurname = contact._surname;
+    int cTel = contact._tel;
+    
+    try{
+        validateContactInfo(cName, cSurname, cTel);
+        Contact* c2 = new Contact{cSurname, cName, cTel};
+        push(c2);
+    }
+    catch(std::bad_alloc){
+        std::cout << "Unable to allocate copy of the contact, push not done";
+    }
 }
 
-void ContactsBook::push(std::string surname, std::string name, unsigned int tel){
+void ContactsBook::push(std::string surname, std::string name, int tel){
     #ifdef DEBUG
     std::cout << std::endl << "push(params)";
     #endif
-    Contact* contact = new Contact{surname, name, tel};
-    push(contact);
+
+    try{
+        validateContactInfo(name, surname, tel);
+        Contact* contact = new Contact{surname, name, tel};
+        push(contact);
+    }
+    catch(std::bad_alloc){
+        std::cout << "Unable to allocate copy of the contact, push not done";
+    }
 }
 
 std::ostream &operator<<(std::ostream &os, const ContactsBook &contactsBook){
@@ -265,7 +309,7 @@ std::ostream &operator<<(std::ostream &os, const ContactsBook &contactsBook){
     os << std::endl << "Saved items: " << contactsBook._contactsInStorage;
     os << std::endl;
 
-    for(unsigned int i = 0; i < contactsBook._contactsInStorage; i++){
+    for(int i = 0; i < contactsBook._contactsInStorage; i++){
         os << "Contact #" << i + 1 << " :" << *(contactsBook._storage[i]) << std::endl;
     }
     return os;

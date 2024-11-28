@@ -5,16 +5,17 @@ const char * BookSizeTooBig::what() {
     return "Book size too big! size specified: " + _bad_size;
 }
 
-ContactAlreadyExists::ContactAlreadyExists(int bad_tel) : _bad_tel(bad_tel){}
-const char * ContactAlreadyExists::what() {
+ContactAlreadyExistsInStorage::ContactAlreadyExistsInStorage(int bad_tel) : _bad_tel(bad_tel){}
+const char * ContactAlreadyExistsInStorage::what() {
     return "Contact already exists! tel of the contact: " + _bad_tel;
 }
 
-CBookStorageEmpty::CBookStorageEmpty(){}
+CBookStorageEmpty::CBookStorageEmpty(const char * errorMsg) : _errorMsg(errorMsg){}
 const char * CBookStorageEmpty::what() {
-        return "You called some operations on a contacts book that has null storage!";
+        return _errorMsg;
 }
 
+// TODO implement errorMsg, more descriptive
 CBookStorageFull::CBookStorageFull(){}
 const char * CBookStorageFull::what(){
     return "You are trying to add a contact to a book that has a full storage!";

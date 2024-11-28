@@ -1,13 +1,13 @@
 #ifndef CONTACTS_BOOK
 #define CONTACTS_BOOK
 
-#include "Contact.h"
+#include "contact.h"
 #include <iostream>
 
 class ContactsBook{ // implemented as a stack
-    unsigned int _maxContacts;
+    int _maxContacts;
     Contact** _storage;   // array of pointers to contacts structs
-    unsigned int _contactsInStorage; // used to keep track of the fullness of the stack
+    int _contactsInStorage; // used to keep track of the fullness of the stack
 
     private:
         void push(Contact* contact);
@@ -32,7 +32,7 @@ class ContactsBook{ // implemented as a stack
         ContactsBook& operator=(ContactsBook &other);
 
         // override operator [] for syntactic sugar
-        Contact& operator[](unsigned int index);
+        Contact& operator[](int index);
 
         // setter
         // sets new storage size for an existing book.
@@ -40,6 +40,10 @@ class ContactsBook{ // implemented as a stack
         // If the size is lower than the current one, deep erase current contacts, set storage cells to defined behavior and shrink size.
         // If the size specified by the user is 0, the storage is deep erased and defined behavior is restored
         void set_max_contacts(int maxContacts);  // uses eraseStorageContent()      
+
+        // getter
+        const int& maxContacts() const;
+        const int& contactsInStorage() const;
 
         // zero the contents of memory
         void eraseStorageContent();
@@ -53,12 +57,12 @@ class ContactsBook{ // implemented as a stack
 
         // search in book by telephone.
         // if the contact is found in the storage return its pointer, if not return nullptr
-        Contact* search(unsigned int tel) const;
+        Contact* search(int tel) const;
 
         // try to push a contact in the storage of the book
         // interfaces for user
         void push(Contact contact);
-        void push(std::string surname, std::string name, unsigned int tel);
+        void push(std::string surname, std::string name, int tel);
 
         friend std::ostream &operator<<(std::ostream &os, const ContactsBook &contactsBook);
 };

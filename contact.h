@@ -7,7 +7,7 @@
 struct Contact {
     std::string _surname;
     std::string _name;
-    unsigned int _tel;
+    int _tel;
 };
 
 std::ostream &operator<<(std::ostream &os, const Contact &contact);

@@ -1,14 +1,16 @@
 #include <iostream>
 #include <string.h>
-#include "ContactsBook.h"
-#include "Contact.h"
+#include "contactsBook.h"
+#include "contact.h"
 #include "contBookExcept.h"
+#include "contactExcept.h"
 
 // #define DEBUG
 
+
+// TODO rewrite the debug blocks
 int main(){
     int maxContacts = 0;
-    ContactsBook contBook;
     bool validSize = false;
     do{
         #ifndef DEBUG
@@ -20,47 +22,55 @@ int main(){
         isInputValid = true;
         #endif
         try {
-            ContactsBook contBook(maxContacts);
+            ContactsBook tmp(maxContacts); // it only exists in this block beacuse of RAII, if there's problem in init, it cannot exist
+            validSize = true;
         }
         catch(std::range_error &e){
-            std::cout << e.what();
-            validSize = true;
+            std::cout << e.what();   
         }
     }
     while(!validSize);
 
+    ContactsBook contBook(maxContacts);
+
     std::string surname = ""; std::string name = ""; int tel = 0;
-    unsigned int i = 0; bool wantsToInput = true;
+    int i = 0; bool wantsToInput = true;
     while(wantsToInput && i < maxContacts){
         #ifdef DEBUG
         surname = "doe"; name = "john"; tel = i;
         #endif
         #ifndef DEBUG
-        std::cout << std::endl << "Inserisci cognome:";
+        std::cout << std::endl << "Insert surname:";
         std::cin >> surname;
         #endif
         #ifndef DEBUG
-        std::cout << std::endl << "Inserisci nome:";
+        std::cout << std::endl << "Insert name:";
         std::cin >> name;
         #endif
         #ifndef DEBUG
-        std::cout << std::endl << "Inserisci nTel:";
+        std::cout << std::endl << "Insert phone number:";
         std::cin >> tel;
         #endif
         wantsToInput = surname != "*";
         if(wantsToInput){
-                try{
-                    contBook.push(surname, name, tel);
-                    i++;
-                }
-                catch(ContactAlreadyExists &e){
-                    std::cout << e.what();
-                }
-                catch(CBookStorageFull &e){
-                    std::cout << e.what();
-                }
+            try{
+                contBook.push(surname, name, tel);
+                i++;
+            }
+            catch(ContactAlreadyExistsInStorage &e){
+                std::cout << e.what();
+            }
+            catch(CBookStorageFull &e){
+                std::cout << e.what();
+            }
+            catch(ContactInfoNotValid &e){
+                std::cout << e.what();
+            }
+            catch(CBookStorageEmpty &e){
+                std::cout << e.what();
             }
         }
+    }
 
     #ifdef DEBUG
     std::cout << std::endl << "first init";
@@ -87,12 +97,20 @@ int main(){
     std::cout << contBook;
 
     std::string wantsToSave = "";
-    std::cout << std::endl << "Vuoi salvare un backup della rubrica?(y/n):";
+    std::cout << std::endl << "Do you want to save a backup of the contacts book?(y/n):";
     std::cin >> wantsToSave;
     if(wantsToSave == "y"){
-        contBook.save();
-        contBook.load();
-        std::cout << contBook;
+        try{
+            contBook.save();
+            contBook.load();
+            std::cout << contBook;
+        }
+        catch(CBookStorageEmpty &e){
+            std::cout << e.what();
+        }
+        catch(CBookDumpNotExists &e){
+            std::cout << e.what();
+        }
     }
     #endif
 
